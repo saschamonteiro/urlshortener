@@ -10,6 +10,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.15.2",
-    "mongodb": "^2.2.26"
+    "mongodb": "^2.2.26",
+    "mongodb-autoincrement": "^1.0.1",
+    "mongoose": "^4.9.8"
   }
 }
