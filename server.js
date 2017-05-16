@@ -9,7 +9,7 @@ var MongoClient = mongodb.MongoClient
 var port = process.env.PORT || 8080
 var mongodburl = process.env.MONGOLAB_URI
 var collectionName = 'urlshort'
-
+app.use(cors())
 app.use(bodyparser.urlencoded({extended: false}))
 app.use(express.static('public'))
 app.post('/api/shorturl/new', (req, res) => {
