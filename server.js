@@ -5,11 +5,17 @@ var autoIncrement = require("mongodb-autoincrement")
 var dns = require('dns')
 var urlx = require('url')
 var bodyparser = require('body-parser')
+const cors = require('cors')
 var MongoClient = mongodb.MongoClient
 var port = process.env.PORT || 8080
 var mongodburl = process.env.MONGOLAB_URI
 var collectionName = 'urlshort'
-app.use(cors())
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+// app.use(cors({origin: 'https://narrow-plane.glitch.me'}))
 app.use(bodyparser.urlencoded({extended: false}))
 app.use(express.static('public'))
 app.post('/api/shorturl/new', (req, res) => {
@@ -21,6 +27,7 @@ app.post('/api/shorturl/new', (req, res) => {
   dns.lookup(parsedUrl, (err2) => {
     if(err2){
       console.log('error', err2)
+      res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify({"error":"invalid URL"}))
     }else{
        MongoClient.connect(mongodburl, (err, db) => {
@@ -48,8 +55,10 @@ app.post('/api/shorturl/new', (req, res) => {
               console.log("Record added as " + records.insertedIds[0])
               var r = {
                 original_url: u,
-                short_url: req.header('x-forwarded-proto') + "://" + req.header('host') + "/api/shorturl/" + records.insertedIds[0]
+                short_url: records.insertedIds[0]
+                // short_url: req.header('x-forwarded-proto') + "://" + req.header('host') + "/api/shorturl/" + records.insertedIds[0]
               }
+              res.setHeader('Content-Type', 'application/json');
               res.send(JSON.stringify(r))
             }
             db.close()
